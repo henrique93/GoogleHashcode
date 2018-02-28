@@ -25,14 +25,31 @@ def checkSlice(minIngredient, maxCell, sliceMatrix):
     t = 0
     m = 0
     c = 0
-    for i in sliceMatrix:
-        if (i == "t"):
-            t += 1
-        elif (i == "m"):
-            m += 1
-        c += 1
-        if (c > maxCell):
-            return False
+    for line in sliceMatrix:
+        for i in line:
+            if (i == "t"):
+                t += 1
+            elif (i == "m"):
+                m += 1
+            c += 1
+            if (c > maxCell):
+                return False
     if (minIngredient < t and minIngredient < m):
         return True
     return False
+
+def maxIngredient(minIngredient, maxCell, pizza):
+    numCells = len(pizza) * len(pizza[0])
+    minSlice = numCells // maxCell
+    t = 0
+    m = 0
+    for line in pizza:
+        for i in line:
+            if (i == "t"):
+                t += 1
+            elif (i == "m"):
+                m += 1
+    if (t < m):
+        return ("t", int(float(t) / minSlice))
+    else:
+        return ("m", int(float(m) / minSlice))
