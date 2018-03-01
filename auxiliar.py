@@ -54,6 +54,7 @@ def main(inputFile):
     result = []
     vehicles = []
     rows, columns, vehicleNum, rideNum, bonus, maxSteps, rides = fileReader(inputFile)
+    rides.sort(key=lambda x: x[3])
     for i in range(0, vehicleNum):
         vehicles.append([(0,0), 0])
     for i in range(vehicleNum):
@@ -82,3 +83,13 @@ def main(inputFile):
                 resFile.write(str(word) + " ")
             resFile.write("\n")
     return result
+
+
+def check(f):
+    res = 0
+    with open(f, "r") as File:
+        lines = File.readlines()
+        for line in lines:
+            line = line.split()
+            res += int(line[0])
+    return res
