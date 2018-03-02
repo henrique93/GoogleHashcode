@@ -24,8 +24,8 @@ def fileReader(f):
     return (rows, columns, vehicleNum, rideNum, bonus, steps, rides)
 
 def assignRide(vehiclePos, steps, rides):
-    rideToPick = (float("inf"), None, float("inf"))
-    rides.sort(key=lambda x: x[3])
+    #rideToPick = (dist, ride, distToFinish, timeToEarliest)
+    rideToPick = (float("inf"), None, float("inf"), float("inf"))
     for ride in rides:
         rideStart = ride[1]
         rideFinish = ride[2]
@@ -33,16 +33,19 @@ def assignRide(vehiclePos, steps, rides):
         distRide = abs((rideFinish[0] - rideStart[0]) + (rideFinish[1] - rideStart[1]))
         distFinish = distRide + dist + steps
         canComplete = distFinish <= ride[4]
-        #rides.sort(key=lambda x: (x[3], dist))
-        if ((dist + steps) <= ride[3] and canComplete): #FIXME <= ou = ???
-            rides.remove(ride)
-            return ride, rides, distFinish
+        closer = dist < rideToPick[0]
+        timeToEarliest = (dist + steps) - ride[3]
+        if (canComplete and (((timeToEarliest <= rideToPick[3] and rideToPick[0] >= 0) or (abs(timeToEarliest) <= abs(rideToPick[3]) and rideToPick[0] <= 0)) or timeToEarliest == 0) and closer):
+            if (dist == 0):
+                rides.remove(ride)
+                return ride, rides, distFinish
+            rideToPick = (dist, ride, distFinish, timeToEarliest)
         elif (canComplete):
             if (dist == 0):
                 rides.remove(ride)
                 return ride, rides, distFinish
-            elif (dist < rideToPick[0]):
-                rideToPick = (dist, ride, distFinish)
+            elif (closer):
+                rideToPick = (dist, ride, distFinish, timeToEarliest)
     if (rideToPick[1] is not None):
         rides.remove(rideToPick[1])
     return rideToPick[1], rides, rideToPick[2]
@@ -57,6 +60,7 @@ def main(inputFile):
     for i in range(vehicleNum):
         result.append([0])
     moved = True
+    rides.sort(key=lambda x: x[3])
     while ((len(rides) > 0) and (step < maxSteps) and (moved)): #FIXME
         moved = False
         nextStep = maxSteps
